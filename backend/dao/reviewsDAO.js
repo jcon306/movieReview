@@ -1,5 +1,5 @@
-import mongodb from "mongodb"
 
+import mongodb from "mongodb"
 const ObjectId = mongodb.ObjectId
 
 let reviews
@@ -13,7 +13,7 @@ export default class ReviewsDAO {
             reviews = await conn.db(process.env.MOVIEREVIEWS_NS).collection('reviews')
         }
         catch (e) {
-            console.error(`Unable to establish connection handle in reviewDAO: ${e}`)
+            console.error(`unable to establish connection handle in reviewDAO: ${e}`)
         }
     }
 
@@ -29,7 +29,7 @@ export default class ReviewsDAO {
             return await reviews.insertOne(reviewDoc)
         }
         catch (e) {
-            console.error(`Unable to post review: ${e}`)
+            console.error(`unable to post review: ${e}`)
             return { error: e }
         }
     }
@@ -43,7 +43,7 @@ export default class ReviewsDAO {
             return updateResponse
         }
         catch (e) {
-            console.error(`Unable to update review: ${e}`)
+            console.error(`unable to update review: ${e}`)
             return { error: e }
         }
     }
@@ -57,8 +57,10 @@ export default class ReviewsDAO {
             return deleteResponse
         }
         catch (e) {
-            console.error(`Unable to delete review: ${e}`)
+            console.error(`unable to delete review: ${e}`)
             return { error: e }
         }
     }
+
+
 }

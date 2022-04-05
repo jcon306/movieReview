@@ -1,9 +1,21 @@
-import mongodb from 'mongodb'
-const ObjectId = mongodb.ObjectId
+import mongodb from "mongodb"
+const ObjectId = mongodb.ObjectID
 
 let movies
 
 export default class MoviesDAO {
+    static async injectDB(conn) {
+        if (movies) {
+            return
+        }
+        try {
+            movies = await conn.db(process.env.MOVIEREVIEWS_NS)
+                .collection('movies')
+        }
+        catch (e) {
+            console.error(`unable to connect in MoviesDAO: ${e}`)
+        }
+    }
 
     static async getMovieById(id) {
         try {
@@ -25,42 +37,16 @@ export default class MoviesDAO {
             ]).next()
         }
         catch (e) {
-            console.error(`Something went wrong in getMovieById: ${e}`)
+            console.error(`something went wrong in getMovieById: ${e}`)
             throw e
         }
     }
 
 
-    static async injectDB(conn) {
-        if (movies) {
-            return
-        }
-        try {
-            movies = await conn.db(process.env.MOVIEREVIEWS_NS).collection('movies')
-        }
-        catch (e) {
-            console.error(`unable to connect in MoviesDAO: ${e}`)
-        }
-    }
-
-    static async getRatings() {
-        let ratings = []
-
-        try {
-            ratings = await movies.distinct("rated")
-            return ratings
-        }
-        catch (e) {
-            console.error(`Unable to get ratings, ${e}`)
-            return ratings
-        }
-    }
-
-
-    static async getMovies({
+    static async getMovies({// default filter
         filters = null,
         page = 0,
-        moviesPerPage = 20,
+        moviesPerPage = 20, // will only get 20 movies at once
     } = {}) {
         let query
         if (filters) {
@@ -86,4 +72,17 @@ export default class MoviesDAO {
             return { moviesList: [], totalNumMovies: 0 }
         }
     }
+
+    static async getRatings() {
+        let ratings = []
+        try {
+            ratings = await movies.distinct("rated")
+            return ratings
+        }
+        catch (e) {
+            console.error(`unable to get ratings, $(e)`)
+            return ratings
+        }
+    }
+
 }
